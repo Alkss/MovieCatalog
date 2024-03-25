@@ -1,9 +1,9 @@
 package com.alkss.moviecatalog.feature_movielist.domain.use_cases
 
-import com.alkss.moviecatalog.core.NetworkResult
 import com.alkss.moviecatalog.core.data.remote.MyAPI
 import com.alkss.moviecatalog.core.data.repository.MovieListLocalRepository
 import com.alkss.moviecatalog.core.data.repository.MovieListRemoteRepository
+import com.alkss.moviecatalog.core.data.util.NetworkResult
 import com.alkss.moviecatalog.core.domain.model.local.Movie
 import com.alkss.moviecatalog.core.domain.model.remote.MovieResponse
 import javax.inject.Inject
@@ -14,11 +14,11 @@ class FetchMovieListRequest @Inject constructor(
 ){
     suspend operator fun invoke(currentPage: Int): List<Movie>{
         return when (val response = remoteRepository.getMovieList(currentPage = currentPage)){
-            is NetworkResult.Error -> {
-               emptyList()
-            }
+            is NetworkResult.Error -> emptyList()
             is NetworkResult.Success -> {
-                insertListIntoDB(response.data)
+                //todo this might be an issue, come back here to look at it
+                val list = response.data.map { it.movieList }[0]
+                insertListIntoDB(list)
             }
         }
     }

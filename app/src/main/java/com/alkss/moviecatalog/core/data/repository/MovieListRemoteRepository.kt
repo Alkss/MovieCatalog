@@ -1,9 +1,9 @@
 package com.alkss.moviecatalog.core.data.repository
 
-import com.alkss.moviecatalog.core.NetworkResult
-import com.alkss.moviecatalog.core.domain.model.remote.MovieResponse
+import com.alkss.moviecatalog.core.data.util.NetworkResult
+import com.alkss.moviecatalog.core.domain.model.remote.Results
 
 fun interface MovieListRemoteRepository {
 
-    suspend fun getMovieList(currentPage: Int): NetworkResult<List<MovieResponse>>
+    suspend fun getMovieList(currentPage: Int): NetworkResult<List<Results>>
 }
