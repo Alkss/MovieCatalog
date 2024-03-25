@@ -33,6 +33,6 @@ data class MovieUiState(
     val movieOverview: String,
     val posterPath: String,
     val releaseDate: String,
-    val rating: Float,
+    val rating: Double,
     val isFavorite: Boolean
 )

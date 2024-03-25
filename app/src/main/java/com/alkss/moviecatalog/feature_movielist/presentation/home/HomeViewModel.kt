@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,17 +22,64 @@ class HomeViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
-    private var job: Job? = null
+    private val _isLoading = MutableStateFlow(AtomicBoolean(false))
+    val isLoading = _isLoading.asStateFlow()
 
-    private val _offset = MutableStateFlow(0)
+    private var job: Job? = null
+    private var _currentPointer = 0
 
     fun onEvent(event: HomeEvent) {
         when (event) {
             HomeEvent.ForceRefresh -> refreshMoviesAndUpdateState()
-            HomeEvent.NextPage -> fetchMoviesAndUpdateState()
-            is HomeEvent.ChangeFavoriteState -> {
-                updateFavoriteAndState(event.movieId)
+            HomeEvent.NextPage -> {
+                _currentPointer += 20
+                refreshMoviesAndUpdateState()
             }
+            is HomeEvent.ChangeFavoriteState -> updateFavoriteAndState(event.movieId)
+            is HomeEvent.SortMovieList -> sortList(event.sortType, event.sortOrder)
+        }
+    }
+
+    private fun sortList(
+        sortType: SortType = SortType.RATING, sortOrder: SortOrder = SortOrder.ASCENDING
+    ) {
+        _uiState.update { uiState ->
+            val sortedMovies = when (sortType) {
+                SortType.RATING -> if (sortOrder == SortOrder.ASCENDING)
+                    uiState.movieList.sortedBy { it.rating }
+                else
+                    uiState.movieList.sortedByDescending { it.rating }
+
+                SortType.NAME -> if (sortOrder == SortOrder.ASCENDING)
+                    uiState.movieList.sortedBy { it.movieTitle }
+                else
+                    uiState.movieList.sortedByDescending { it.movieTitle }
+
+                SortType.RELEASE_DATE -> if (sortOrder == SortOrder.ASCENDING)
+                    uiState.movieList.sortedBy { it.releaseDate }
+                else
+                    uiState.movieList.sortedByDescending { it.releaseDate }
+            }
+            val sortedFavorites = when (sortType) {
+                SortType.RATING -> if (sortOrder == SortOrder.ASCENDING)
+                    uiState.favoriteList.sortedBy { it.rating }
+                else
+                    uiState.favoriteList.sortedByDescending { it.rating }
+
+                SortType.NAME -> if (sortOrder == SortOrder.ASCENDING)
+                    uiState.favoriteList.sortedBy { it.movieTitle }
+                else
+                    uiState.favoriteList.sortedByDescending { it.movieTitle }
+
+                SortType.RELEASE_DATE -> if (sortOrder == SortOrder.ASCENDING)
+                    uiState.favoriteList.sortedBy { it.releaseDate }
+                else
+                    uiState.favoriteList.sortedByDescending { it.releaseDate }
+            }
+
+            uiState.copy(
+                movieList = sortedMovies, favoriteList = sortedFavorites
+            )
         }
     }
 
@@ -40,27 +88,23 @@ class HomeViewModel @Inject constructor(
             if (job?.isCancelled == true) {
                 return@launch
             }
-            //get the movie
+            // get the movie
             val movie = _uiState.value.movieList.first { originalUiState ->
                 originalUiState.movieId == movieId
             }
             val updatedMovie = movie.copy(isFavorite = !movie.isFavorite)
-            //update movie in the database
+            // update movie in the database
             homeUseCases.updateFavoriteState.invoke(updatedMovie.movieId, updatedMovie.isFavorite)
 
-            //update movie from favorite list
+            // update movie from favorite list
             _uiState.update { currentUiState ->
                 val updatedMovieList = currentUiState.movieList.map {
-                    if (it.movieId == movie.movieId)
-                        it.copy(isFavorite = movie.isFavorite)
-                    else
-                        it
+                    if (it.movieId == updatedMovie.movieId) it.copy(isFavorite = updatedMovie.isFavorite)
+                    else it
                 }
                 val updatedFavoriteList =
-                    if (movie.isFavorite)
-                        currentUiState.favoriteList + updatedMovie
-                    else
-                        currentUiState.favoriteList.filter { it.movieId != movie.movieId }
+                    if (updatedMovie.isFavorite) currentUiState.favoriteList + updatedMovie
+                    else currentUiState.favoriteList.filter { it.movieId != updatedMovie.movieId }
 
                 currentUiState.copy(
                     movieList = updatedMovieList.distinct(),
@@ -71,43 +115,18 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun fetchMoviesAndUpdateState() {
-        job = viewModelScope.launch(Dispatchers.IO) {
-            if (job?.isCancelled == true) {
-                return@launch
-            }
-
-            val offset = _offset.value
-            val page = offset.offsetToPage()
-            var movieList = homeUseCases.fetchMoviesDb.invoke(limit = 20, offset = offset)
-
-            // If the size of the object returned by the db is less than 20, fetch the rest from the remote API
-            if (movieList.size < 20) {
-                movieList += homeUseCases.fetchMovieListRequest.invoke(page)
-            }
-
-            // If the data from the database is empty when going to the next offset, fetch data from the API
-            if (offset % 20 == 0 && movieList.isEmpty()) {
-                movieList = homeUseCases.fetchMovieListRequest.invoke(page)
-            }
-
-            updateUiState(movieList)
-
-            // Increment the offset for the next fetch operation
-            _offset.update { it + 19 }
-        }
-    }
-
 
     private fun refreshMoviesAndUpdateState() {
         job = viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.update { AtomicBoolean(true) }
             if (job?.isCancelled == true) {
                 return@launch
             }
 
-            val page = _offset.value.offsetToPage()
+            val page = _currentPointer.offsetToPage()
             val movieList = homeUseCases.fetchMovieListRequest.invoke(page)
             updateUiState(movieList)
+            _isLoading.update { AtomicBoolean(false) }
         }
     }
 
@@ -119,5 +138,6 @@ class HomeViewModel @Inject constructor(
                 favoriteList = (it.favoriteList + newMovies.favoriteList).distinct()
             )
         }
+        sortList()
     }
 }

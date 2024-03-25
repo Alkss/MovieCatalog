@@ -16,8 +16,7 @@ class FetchMovieListRequest @Inject constructor(
         return when (val response = remoteRepository.getMovieList(currentPage = currentPage)){
             is NetworkResult.Error -> emptyList()
             is NetworkResult.Success -> {
-                //todo this might be an issue, come back here to look at it
-                val list = response.data.map { it.movieList }[0]
+                val list = response.data.movieList
                 insertListIntoDB(list)
             }
         }
