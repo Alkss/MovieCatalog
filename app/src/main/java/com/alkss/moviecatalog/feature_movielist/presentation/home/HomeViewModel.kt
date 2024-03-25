@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkss.moviecatalog.core.domain.model.local.Movie
 import com.alkss.moviecatalog.feature_movielist.domain.use_cases.HomeUseCases
-import com.alkss.moviecatalog.feature_movielist.presentation.util.offsetToPage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,13 +25,13 @@ class HomeViewModel @Inject constructor(
     val isLoading = _isLoading.asStateFlow()
 
     private var job: Job? = null
-    private var _currentPointer = 0
+    private var _currentPage = 1
 
     fun onEvent(event: HomeEvent) {
         when (event) {
             HomeEvent.ForceRefresh -> refreshMoviesAndUpdateState()
             HomeEvent.NextPage -> {
-                _currentPointer += 20
+                _currentPage++
                 refreshMoviesAndUpdateState()
             }
             is HomeEvent.ChangeFavoriteState -> updateFavoriteAndState(event.movieId)
@@ -110,7 +109,6 @@ class HomeViewModel @Inject constructor(
                     movieList = updatedMovieList.distinct(),
                     favoriteList = updatedFavoriteList.distinct()
                 )
-
             }
         }
     }
@@ -123,7 +121,7 @@ class HomeViewModel @Inject constructor(
                 return@launch
             }
 
-            val page = _currentPointer.offsetToPage()
+            val page = _currentPage
             val movieList = homeUseCases.fetchMovieListRequest.invoke(page)
             updateUiState(movieList)
             _isLoading.update { AtomicBoolean(false) }
@@ -138,6 +136,5 @@ class HomeViewModel @Inject constructor(
                 favoriteList = (it.favoriteList + newMovies.favoriteList).distinct()
             )
         }
-        sortList()
     }
 }

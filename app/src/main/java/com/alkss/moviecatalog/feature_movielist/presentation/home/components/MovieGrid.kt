@@ -54,7 +54,7 @@ fun MovieGrid(
             if (index >= offset) {
                 LaunchedEffect(Unit) {
                     onNextPage()
-                    offset += 10
+                    offset += 8
                 }
             }
         }
