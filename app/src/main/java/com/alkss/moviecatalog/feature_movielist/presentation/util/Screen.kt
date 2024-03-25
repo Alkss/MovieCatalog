@@ -1,4 +1,4 @@
-package com.alkss.baseapp.feature_.presentation.util
+package com.alkss.moviecatalog.feature_movielist.presentation.util
 
 /**
  * Represents the different screens in the delivery feature.
@@ -14,10 +14,5 @@ sealed class Screen(val route: String) {
     /**
      * Represents the delivery screen.
      */
-    data object DeliveryScreen: Screen("delivery_screen")
-
-    /**
-     * Represents the invoice details screen.
-     */
-    data object InvoiceDetailsScreen: Screen("invoice_details_screen")
+    data object FavoriteScreen: Screen("favorite_screen")
 }

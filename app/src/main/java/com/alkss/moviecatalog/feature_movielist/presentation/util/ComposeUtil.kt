@@ -1,4 +1,4 @@
-package com.alkss.baseapp.feature_.presentation.util
+package com.alkss.moviecatalog.feature_movielist.presentation.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

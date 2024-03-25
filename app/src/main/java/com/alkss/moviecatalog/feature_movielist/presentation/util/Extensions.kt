@@ -1,4 +1,4 @@
-package com.alkss.baseapp.feature_.presentation.util
+package com.alkss.moviecatalog.feature_movielist.presentation.util
 
 /**
  * Returns the next element in the list after the specified element.
@@ -10,4 +10,8 @@ package com.alkss.baseapp.feature_.presentation.util
 fun <T> List<T>.getNext(element: T): T? {
     val index = this.indexOf(element)
     return if (index in 0 until this.lastIndex) this[index + 1] else null
+}
+
+fun Int.offsetToPage(): Int{
+    return (this/20) + 1
 }

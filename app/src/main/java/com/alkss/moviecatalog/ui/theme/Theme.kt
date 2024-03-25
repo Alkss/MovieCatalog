@@ -1,6 +1,5 @@
-package com.alkss.baseapp.ui.theme
+package com.alkss.moviecatalog.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

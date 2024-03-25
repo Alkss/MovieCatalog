@@ -1,4 +1,4 @@
-package com.alkss.baseapp
+package com.alkss.moviecatalog
 
 import org.junit.Test
 

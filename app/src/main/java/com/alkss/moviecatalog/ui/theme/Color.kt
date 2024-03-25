@@ -1,4 +1,4 @@
-package com.alkss.baseapp.ui.theme
+package com.alkss.moviecatalog.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

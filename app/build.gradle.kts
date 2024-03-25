@@ -7,17 +7,17 @@ plugins {
 }
 
 android {
-    namespace = "com.alkss.meight"
+    namespace = "com.alkss.moviecatalog"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.alkss.baseapp"
+        applicationId = "com.alkss.moviecatalog"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "com.alkss.baseapp.HiltTestRunner"
+        testInstrumentationRunner = "com.alkss.moviedatabase.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -61,6 +61,10 @@ android {
 }
 
 dependencies {
+    //Paging
+    implementation("androidx.paging:paging-runtime:3.2.1")
+    implementation("androidx.paging:paging-compose:3.2.1")
+
     //Tests
     androidTestImplementation(libs.androidx.junit.v113)
     androidTestImplementation(libs.androidx.espresso.core.v340)

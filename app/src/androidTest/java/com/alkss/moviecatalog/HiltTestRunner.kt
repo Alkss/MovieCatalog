@@ -1,4 +1,4 @@
-package com.alkss.baseapp
+package com.alkss.moviecatalog
 
 import android.app.Application
 import android.content.Context

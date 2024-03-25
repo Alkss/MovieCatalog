@@ -1,4 +1,4 @@
-package com.alkss.baseapp.feature_.presentation
+package com.alkss.moviecatalog.feature_movielist.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.alkss.baseapp.feature_.presentation.home.HomeScreen
-import com.alkss.baseapp.feature_.presentation.util.Screen
-import com.alkss.baseapp.ui.theme.BaseAppTheme
+import com.alkss.moviecatalog.feature_movielist.presentation.home.HomeScreen
+import com.alkss.moviecatalog.feature_movielist.presentation.util.Screen
+import com.alkss.moviecatalog.ui.theme.BaseAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
