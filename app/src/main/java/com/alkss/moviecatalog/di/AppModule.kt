@@ -54,7 +54,7 @@ object AppModule {
                 val originalRequest = chain.request()
 
                 val newRequestBuilder = originalRequest.newBuilder()
-                newRequestBuilder.header("Authorization", "Bearer " + MyAPI.API_KEY)
+                newRequestBuilder.header("Authorization", "Bearer " + MyAPI.API_READ_ACCESS_TOKEN)
 
                 val newRequest = newRequestBuilder.build()
                 chain.proceed(newRequest)
