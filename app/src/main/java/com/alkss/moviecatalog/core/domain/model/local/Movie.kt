@@ -10,6 +10,6 @@ data class Movie(
     val overview: String,
     val posterPath: String,
     val releaseDate: String,
-    val rating: Float,
+    val rating: Double,
     val isFavorite: Boolean = false
 )

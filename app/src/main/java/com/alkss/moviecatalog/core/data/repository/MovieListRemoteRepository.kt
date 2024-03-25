@@ -5,5 +5,5 @@ import com.alkss.moviecatalog.core.domain.model.remote.Results
 
 fun interface MovieListRemoteRepository {
 
-    suspend fun getMovieList(currentPage: Int): NetworkResult<List<Results>>
+    suspend fun getMovieList(currentPage: Int): NetworkResult<Results>
 }

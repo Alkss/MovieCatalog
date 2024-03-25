@@ -11,7 +11,7 @@ class MovieListRemoteRepositoryImpl @Inject constructor(
     retrofit: Retrofit
 ) : MovieListRemoteRepository {
     private val api = retrofit.create(MovieDBApi::class.java)
-    override suspend fun getMovieList(currentPage: Int): NetworkResult<List<Results>> {
+    override suspend fun getMovieList(currentPage: Int): NetworkResult<Results> {
         try {
             val response = api.getMovies(currentPage)
             return NetworkResult.Success(response)

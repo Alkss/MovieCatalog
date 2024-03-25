@@ -6,8 +6,8 @@ import retrofit2.http.Query
 
 interface MovieDBApi {
 
-    @GET("/discover/movie")
+    @GET("3/discover/movie")
     suspend fun getMovies(
         @Query("page") page: Int = 1
-    ): List<Results>
+    ): Results
 }
